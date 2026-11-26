@@ -181,23 +181,29 @@ const FOND_ECRAN = "";
 // Cartes de la boutique : "icone", "texte", "description" et "action" s'affichent sur la carte.
 // style: "" = bleu, "alt" = rouge.
 const LIENS = [
-  { icone: "👕", texte: "Textiles",    description: "Sweat, T-shirt",           action: "Commander", url: "https://tally.so/r/OQ7Qkg", style: "" },
-  { icone: "🎁", texte: "Goodies",     description: "Les goodies de l'Amicale", action: "Commander", url: "https://tally.so/r/RWDxNl", style: "" },
-  { icone: "🎫", texte: "Évènements",  description: "Réserve ta place",         action: "Réserver",  url: "https://tally.so/r/EqxqgX", style: "alt" }
+  { icone: "👕", texte: "Textiles", description: "Sweat, T-shirt", action: "Commander", url: "https://tally.so/r/OQ7Qkg", style: "" },
+  { icone: "🎁", texte: "Goodies", description: "Les goodies de l'Amicale", action: "Commander", url: "https://tally.so/r/RWDxNl", style: "" },
+  { icone: "🎫", texte: "Évènements", description: "Réserve ta place", action: "Réserver", url: "https://tally.so/r/EqxqgX", style: "alt" }
 ];
 
 // Évènements : date au format AAAA-MM-JJ. Les dates passées disparaissent toutes seules.
 const EVENEMENTS = [
-  { date: "2026-11-19", titre: "Beaujolais",      details: "" },
-  { date: "2026-12-11", titre: "Marché de Noël",  details: "H.D Bobigny" },
-  { date: "2026-12-25", titre: "Noël",            details: "Hey! C'est Noël! HoHoHo!" },
-  { date: "2026-12-31", titre: "Nouvel An!",      details: "" }
+  { date: "2026-11-19", titre: "Beaujolais", details: "" },
+  { date: "2026-12-11", titre: "Marché de Noël", details: "H.D Bobigny" },
+  { date: "2026-12-25", titre: "Noël", details: "Hey! C'est Noël! HoHoHo!" },
+  { date: "2026-12-31", titre: "Nouvel An!", details: "" }
 // { date: "2027-03-17", titre: "Soirée Saint-Patrick", details: "Date à confirmer" },
 ];
 
 // News : la plus récente en premier. "image", "lien", "texteLien" et "rouge" sont facultatifs.
 // Dans "texte" : **gras**, *italique*, __souligné__, et \n pour un retour à la ligne.
 const NEWS = [
+  {
+    date: "2026-11-26",
+    titre: "test",
+    texte: "test",
+    rouge: true
+  },
   {
     date: "2026-11-23",
     titre: "👕 Lancement de la fabrication de T-shirt aux couleurs de la Sûreté! 👕",
@@ -215,9 +221,9 @@ const NEWS = [
     date: "2026-11-20",
     titre: "🎄 Marché de Noël le 11 décembre ! 🎁",
     texte: "Des séances de massage de 20 min seront proposées entre 10h et 14h par deux masseuses. Pour réserver, fais signe à un membre du bureau. Des exposants seront présents dans nos murs pour proposer leurs produits!",
+    image: "images/logo_noel.jpeg",
     lien: "https://amst93-noel-massage.netlify.app/",
-    texteLien: "Voir le planning des massages",
-    image: "images/logo_noel.jpeg"
+    texteLien: "Voir le planning des massages"
   }
 ];
 
