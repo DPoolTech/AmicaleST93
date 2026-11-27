@@ -64,11 +64,36 @@ h2::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--go
 .news p{margin:6px 0;white-space:pre-line}
 .news-corps{flex:1;min-width:0}
 .news.avec-image{display:flex;gap:18px;align-items:flex-start}
-.news.avec-image img{flex:0 0 38%;width:38%;max-height:260px;object-fit:cover;border-radius:12px}
+.news-fig{flex:0 0 38%;width:38%;margin:0}
+.zoom{display:block;width:100%;padding:0;border:0;background:none;border-radius:12px;cursor:zoom-in}
+.zoom img{display:block;width:100%;max-height:260px;object-fit:cover;border-radius:12px}
+.news-fig figcaption{margin-top:5px;text-align:center;font-size:.72rem;color:var(--mut);opacity:.85}
 @media (max-width:560px){
   .news.avec-image{flex-direction:column}
-  .news.avec-image img{flex:none;width:100%;max-height:240px}
+  .news-fig{flex:none;width:100%}
+  .zoom img{max-height:240px}
 }
+.news-texte{line-height:1.6}
+.news-texte.coupe:not(.ouvert){max-height:calc(var(--news-lignes,7) * 1.6em + 6px);overflow:hidden;-webkit-mask-image:linear-gradient(#000 62%,transparent);mask-image:linear-gradient(#000 62%,transparent)}
+.plus{margin:2px 0 6px;padding:4px 0;border:0;background:none;color:var(--acc);font:inherit;font-size:.92rem;font-weight:600;cursor:pointer}
+.plus:hover{text-decoration:underline}
+.pg{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:22px}
+.pg button{min-width:42px;padding:8px 13px;border-radius:10px;border:1px solid var(--bd);background:rgba(255,255,255,.06);color:var(--txt);font:inherit;font-weight:600;cursor:pointer}
+.pg button:hover:not(:disabled){border-color:var(--gold)}
+.pg button[aria-current="page"]{background:var(--gold);color:#1a1a1a;border-color:var(--gold)}
+.pg button:disabled{opacity:.4;cursor:default}
+.plus:focus-visible,.zoom:focus-visible,.pg button:focus-visible,.lb-x:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.news.epingle{background:rgba(15,30,61,.97);background:color-mix(in srgb,var(--c,var(--gold)) 13%,#0f1e3d);border-color:color-mix(in srgb,var(--c,var(--gold)) 55%,transparent);box-shadow:0 8px 26px rgba(0,0,0,.45)}
+#epingles .news{margin-bottom:14px}
+#epingles .news:last-child{margin-bottom:0}
+#epingles-zone{padding-bottom:4px}
+.pin{display:inline-block;margin:0 0 8px;padding:2px 11px;border-radius:999px;font-size:.78rem;font-weight:700;color:#1a1a1a;background:var(--c,var(--gold))}
+#lightbox{border:0;padding:0;background:transparent;width:100%;height:100%;max-width:none;max-height:none;color:var(--txt)}
+#lightbox::backdrop{background:rgba(5,10,25,.92)}
+#lightbox .lb{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:100%;height:100%;padding:16px;cursor:zoom-out}
+#lightbox img{max-width:95vw;max-height:calc(100vh - 90px);object-fit:contain;border-radius:8px;box-shadow:0 10px 40px rgba(0,0,0,.6)}
+#lightbox p{margin:0;font-size:.9rem;color:var(--mut);text-align:center}
+.lb-x{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));right:14px;width:44px;height:44px;border-radius:50%;border:1px solid var(--bd);background:rgba(255,255,255,.14);color:#fff;font-size:1.6rem;line-height:1;cursor:pointer}
 .news a{color:var(--acc);font-weight:600;text-decoration:none}
 .news a:hover{text-decoration:underline}
 .news.rouge h3,.news.rouge p{color:#ff6b5e}
@@ -149,6 +174,8 @@ footer{text-align:center;color:rgba(255,255,255,.75);font-size:.85rem;padding:12
   </div>
 </nav>
 
+<div class="wrap" id="epingles-zone" hidden><div id="epingles" role="region" aria-label="News épinglées"></div></div>
+
 <aside class="agenda-bandeau" id="agenda" aria-label="Agenda">
   <div class="agenda-inner">
     <div class="agenda-titre">📆 Prochains évènements</div>
@@ -157,7 +184,7 @@ footer{text-align:center;color:rgba(255,255,255,.75);font-size:.85rem;padding:12
 </aside>
 
 <div class="wrap">
-  <section id="news-sec"><h2 id="news">🆕 News</h2><div id="news-liste"></div></section>
+  <section id="news-sec"><h2 id="news">🆕 News</h2><div id="news-liste"></div><nav class="pg" id="news-pages" aria-label="Pages de news" hidden></nav></section>
   <section><h2 id="boutique">🛍️ Boutique &amp; réservations</h2><div class="boutique" id="liens"></div></section>
   <section>
     <h2 id="contact">✉️ Contacter le bureau</h2>
@@ -166,6 +193,10 @@ footer{text-align:center;color:rgba(255,255,255,.75);font-size:.85rem;padding:12
   </section>
 </div>
 <footer id="pied"></footer>
+
+<dialog id="lightbox" aria-label="Image agrandie">
+  <div class="lb"><button type="button" class="lb-x" aria-label="Fermer">×</button><img id="lb-img" alt=""><p id="lb-cap"></p></div>
+</dialog>
 
 <script>
 /* =====================================================================
@@ -185,31 +216,30 @@ const FOND_ECRAN = "";
 // Cartes de la boutique : "icone", "texte", "description" et "action" s'affichent sur la carte.
 // style: "" = bleu, "alt" = rouge.
 const LIENS = [
-  { icone: "👕", texte: "Textiles", description: "Sweat, T-shirt", action: "Commander", url: "https://tally.so/r/OQ7Qkg", style: "" },
-  { icone: "🎁", texte: "Goodies", description: "Les goodies de l'Amicale", action: "Commander", url: "https://tally.so/r/RWDxNl", style: "" },
-  { icone: "🎫", texte: "Évènements", description: "Réserve ta place", action: "Réserver", url: "https://tally.so/r/EqxqgX", style: "alt" }
+  { icone: "👕", texte: "Textiles",    description: "Sweat, T-shirt",           action: "Commander", url: "https://tally.so/r/OQ7Qkg", style: "" },
+  { icone: "🎁", texte: "Goodies",     description: "Les goodies de l'Amicale", action: "Commander", url: "https://tally.so/r/RWDxNl", style: "" },
+  { icone: "🎫", texte: "Évènements",  description: "Réserve ta place",         action: "Réserver",  url: "https://tally.so/r/EqxqgX", style: "alt" }
 ];
 
 // Évènements : date au format AAAA-MM-JJ. Les dates passées disparaissent toutes seules.
 // "couleur" (facultatif) : "auto" (le prochain en or, les autres en rouge), "or", "rouge", "bleu", "vert", "blanc", "violet", "turquoise" ou "orange".
 const EVENEMENTS = [
-  { date: "2026-11-19", titre: "Beaujolais", details: "" },
-  { date: "2026-12-11", titre: "Marché de Noël", details: "H.D Bobigny" },
-  { date: "2026-12-25", titre: "Noël", details: "Hey! C'est Noël! HoHoHo!" },
-  { date: "2026-12-31", titre: "Nouvel An!", details: "" }
+  { date: "2026-11-19", titre: "Beaujolais",      details: "" },
+  { date: "2026-12-11", titre: "Marché de Noël",  details: "H.D Bobigny" },
+  { date: "2026-12-25", titre: "Noël",            details: "Hey! C'est Noël! HoHoHo!" },
+  { date: "2026-12-31", titre: "Nouvel An!",      details: "" }
 // { date: "2027-03-17", titre: "Soirée Saint-Patrick", details: "Date à confirmer" },
 ];
 
+// Réglages des news : nombre par page, et nombre de lignes visibles avant « Afficher toute la news ».
+const NEWS_PAR_PAGE = 10;
+const NEWS_LIGNES_MAX = 7;
+const EPINGLES_MAX = 3;   // nombre maximum de news épinglées affichées en haut de la page
+
 // News : la plus récente en premier. "image", "lien", "texteLien" et "couleur" (rouge, bleu, vert, blanc, violet, turquoise ou orange ; or par défaut) sont facultatifs.
 // Dans "texte" : **gras**, *italique*, __souligné__, et \n pour un retour à la ligne.
+// "epingle": true met la news en haut de la page ; "epingleJusquau": "AAAA-MM-JJ" la retire toute seule après cette date.
 const NEWS = [
-  {
-    date: "2026-11-27",
-    titre: "🎄✨ LES FÊTES DE FIN D'ANNÉE APPROCHENT… ET LA GOURMANDISE AUSSI ! ✨🎄",
-    texte: "Cette année, faites-vous plaisir et profitez pleinement de vos moments de partage !\n\nNous vous proposons de découvrir nos plateaux de petits fours prêts à poser ainsi que nos magnifiques plateaux de fruits frais, soigneusement préparés et joliment présentés pour sublimer vos tables de fêtes. 🥰\n\n🥪 Petits fours salés, bouchées gourmandes et assortiments variés.\n\n🍓 Plateaux de fruits frais, colorés et généreux.\n\n✨ Une présentation soignée, un maximum de gourmandise et surtout… zéro préparation pour vous !\n\n🎁 Les commandes sont dès à présent ouvertes - date limite de réservation le 9 DÉCEMBRE 2026\nRetrait des plateaux au service\n\nN'attendez pas le dernier moment pour réserver vos plateaux.\n\nOffrez-vous la gourmandise, on s'occupe du reste ! ❤️",
-    couleur: "vert",
-    image: "images_news/noel_pj93.jpg"
-  },
   {
     date: "2026-11-23",
     titre: "👕 Lancement de la fabrication de T-shirt aux couleurs de la Sûreté! 👕",
@@ -227,9 +257,9 @@ const NEWS = [
     date: "2026-11-20",
     titre: "🎄 Marché de Noël le 11 décembre ! 🎁",
     texte: "Des séances de massage de 20 min seront proposées entre 10h et 14h par deux masseuses. Pour réserver, fais signe à un membre du bureau. Des exposants seront présents dans nos murs pour proposer leurs produits!",
-    image: "images/logo_noel.jpeg",
     lien: "https://amst93-noel-massage.netlify.app/",
-    texteLien: "Voir le planning des massages"
+    texteLien: "Voir le planning des massages",
+    image: "images/logo_noel.jpeg"
   }
 ];
 
@@ -265,12 +295,81 @@ $("liens").innerHTML = LIENS.map(l =>
   `<span class="carte-go">${esc(l.action || "Accéder")} →</span></a>`).join("");
 
 const coulNews = n => n.couleur || (n.rouge ? "rouge" : "");
-$("news-liste").innerHTML = NEWS.length ? NEWS.map(n =>
-  `<div class="news${n.image ? " avec-image" : ""}${coulNews(n) === "rouge" ? " rouge" : ""}${coulNews(n) && coulNews(n) !== "or" ? " c-" + esc(coulNews(n)) : ""}">` +
-  (n.image ? `<img src="${esc(n.image)}" alt="${esc(n.titre)}" loading="lazy">` : "") +
-  `<div class="news-corps"><h3>${esc(n.titre)}</h3><div class="tag">${fmt(n.date)}</div><p>${riche(n.texte)}</p>` +
+let pageNews = 1;
+const jourNews = new Date().toLocaleDateString("sv-SE");
+const epingles = NEWS.filter(n => n.epingle && (!n.epingleJusquau || n.epingleJusquau >= jourNews)).slice(0, EPINGLES_MAX);
+const normales = NEWS.filter(n => !epingles.includes(n));
+const nbPages = Math.max(1, Math.ceil(normales.length / NEWS_PAR_PAGE));
+
+const carteNews = (n, epingle) =>
+  `<div class="news${epingle ? " epingle" : ""}${n.image ? " avec-image" : ""}${coulNews(n) === "rouge" ? " rouge" : ""}${coulNews(n) && coulNews(n) !== "or" ? " c-" + esc(coulNews(n)) : ""}">` +
+  (n.image ? `<figure class="news-fig"><button type="button" class="zoom" aria-label="Agrandir l’image : ${esc(n.titre)}"><img src="${esc(n.image)}" alt="${esc(n.titre)}" loading="${epingle ? "eager" : "lazy"}"></button><figcaption>Cliquez pour agrandir</figcaption></figure>` : "") +
+  `<div class="news-corps">${epingle ? `<div class="pin">📌 Épinglé</div>` : ""}<h3>${esc(n.titre)}</h3><div class="tag">${fmt(n.date)}</div>` +
+  `<div class="news-texte"><p>${riche(n.texte)}</p></div>` +
+  `<button type="button" class="plus" aria-expanded="false" hidden>Afficher toute la news</button>` +
   (n.lien ? `<p><a href="${esc(n.lien)}">${esc(n.texteLien || "En savoir plus")} →</a></p>` : "") +
-  `</div></div>`).join("") : `<p class="empty">Pas d’actualité pour le moment.</p>`;
+  `</div></div>`;
+
+function ajusterNews() {
+  document.documentElement.style.setProperty("--news-lignes", NEWS_LIGNES_MAX);
+  document.querySelectorAll(".news-texte").forEach(t => {
+    const bouton = t.nextElementSibling;
+    if (t.classList.contains("ouvert")) { bouton.hidden = false; return; }
+    t.classList.remove("coupe");
+    const lh = parseFloat(getComputedStyle(t).lineHeight) || 24;
+    const long = t.scrollHeight > NEWS_LIGNES_MAX * lh + 6 + lh * 1.5;
+    t.classList.toggle("coupe", long);
+    bouton.hidden = !long;
+  });
+}
+
+function afficherNews(defiler) {
+  pageNews = Math.min(Math.max(1, pageNews), nbPages);
+  const debut = (pageNews - 1) * NEWS_PAR_PAGE;
+  $("news-liste").innerHTML = normales.length ? normales.slice(debut, debut + NEWS_PAR_PAGE).map(n => carteNews(n)).join("") :
+    `<p class="empty">${epingles.length ? "Pas d’autre actualité pour le moment." : "Pas d’actualité pour le moment."}</p>`;
+
+  const pg = $("news-pages");
+  pg.hidden = nbPages < 2;
+  if (nbPages > 1) {
+    let h = `<button type="button" data-p="${pageNews - 1}"${pageNews === 1 ? " disabled" : ""}>Précédent</button>`;
+    for (let p = 1; p <= nbPages; p++) h += `<button type="button" data-p="${p}" aria-label="Page ${p}"${p === pageNews ? ' aria-current="page"' : ""}>${p}</button>`;
+    h += `<button type="button" data-p="${pageNews + 1}"${pageNews === nbPages ? " disabled" : ""}>Suivant</button>`;
+    pg.innerHTML = h;
+  }
+  ajusterNews();
+  if (defiler) $("news-sec").scrollIntoView({block: "start"});
+}
+
+$("news-pages").addEventListener("click", e => {
+  const b = e.target.closest("button[data-p]");
+  if (!b || b.disabled) return;
+  pageNews = +b.dataset.p; afficherNews(true);
+});
+const clicNews = e => {
+  const z = e.target.closest(".zoom");
+  if (z) {
+    const im = z.querySelector("img");
+    $("lb-img").src = im.currentSrc || im.src; $("lb-img").alt = im.alt; $("lb-cap").textContent = im.alt;
+    $("lightbox").showModal();
+    return;
+  }
+  const m = e.target.closest(".plus");
+  if (m) {
+    const ouvert = m.previousElementSibling.classList.toggle("ouvert");
+    m.setAttribute("aria-expanded", ouvert);
+    m.textContent = ouvert ? "Réduire la news" : "Afficher toute la news";
+    if (!ouvert) m.closest(".news").scrollIntoView({block: "nearest"});
+  }
+};
+$("news-liste").addEventListener("click", clicNews);
+$("epingles").addEventListener("click", clicNews);
+$("lightbox").addEventListener("click", () => $("lightbox").close());
+if (document.fonts) document.fonts.ready.then(ajusterNews);
+let minuterie; addEventListener("resize", () => { clearTimeout(minuterie); minuterie = setTimeout(ajusterNews, 150); });
+$("epingles").innerHTML = epingles.map(n => carteNews(n, true)).join("");
+$("epingles-zone").hidden = !epingles.length;
+afficherNews();
 
 const aujourdhui = new Date().toLocaleDateString("sv-SE");
 const aVenir = EVENEMENTS.filter(e => e.date >= aujourdhui).sort((a, b) => a.date.localeCompare(b.date));
