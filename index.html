@@ -56,10 +56,10 @@ h2{margin:0 0 14px;font-size:1.4rem;display:flex;align-items:center;gap:10px}
 h2::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--gold),transparent)}
 .intro{color:var(--mut);margin:-4px 0 14px}
 
-.news{padding:16px 18px;margin:0 0 18px;background:rgba(255,255,255,.06);border:1px solid var(--bd);border-left:5px solid var(--gold);border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.news{padding:16px 18px;margin:0 0 18px;background:rgba(255,255,255,.06);border:1px solid var(--bd);border-left:5px solid var(--c,var(--gold));border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.25)}
 .news:last-child{margin-bottom:0}
-.news h3{margin:0 0 4px;font-family:"Playfair Display",Georgia,serif;font-size:1.3rem;color:var(--gold)}
-.news .tag{padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid var(--gold)}
+.news h3{margin:0 0 4px;font-family:"Playfair Display",Georgia,serif;font-size:1.3rem;color:var(--c,var(--gold))}
+.news .tag{padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid var(--c,var(--gold))}
 .tag{font-size:.82rem;color:var(--mut)}
 .news p{margin:6px 0;white-space:pre-line}
 .news-corps{flex:1;min-width:0}
@@ -74,6 +74,7 @@ h2::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--go
 .news.rouge h3,.news.rouge p{color:#ff6b5e}
 .news.rouge{border-left-color:#ff6b5e}
 .news.rouge .tag{border-bottom-color:#ff6b5e}
+.c-rouge{--c:#ff6b5e}.c-bleu{--c:var(--acc)}.c-vert{--c:#5fd39a}.c-blanc{--c:#eef1f8}.c-violet{--c:#b79bff}.c-turquoise{--c:#4fd6d0}.c-orange{--c:#ff9f5a}
 
 .ev{display:flex;gap:16px;align-items:center;padding:16px 18px;margin:0 0 18px;background:rgba(255,255,255,.06);border:1px solid var(--bd);border-left:5px solid var(--acc2);border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.25)}
 .ev:last-child{margin-bottom:0}
@@ -87,6 +88,9 @@ h2::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--go
 .badge b{display:block;font-size:2rem;line-height:1.1;padding:8px 0 4px;font-family:"Playfair Display",Georgia,serif}
 .badge span{display:block;background:var(--acc2);color:#fff;font-size:.8rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:4px 0}
 .ev.prochain .badge span{background:var(--gold);color:#1a1a1a}
+.ev.cc{border-left-color:var(--c)}
+.ev.cc .ev-delai{background:color-mix(in srgb,var(--c) 18%,transparent);color:var(--c);border-color:color-mix(in srgb,var(--c) 50%,transparent)}
+.ev.cc .badge span{background:var(--c);color:#1a1a1a}
 
 .boutique{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
 .carte{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:24px 16px 18px;border-radius:16px;color:#fff;text-decoration:none;
@@ -181,21 +185,22 @@ const FOND_ECRAN = "";
 // Cartes de la boutique : "icone", "texte", "description" et "action" s'affichent sur la carte.
 // style: "" = bleu, "alt" = rouge.
 const LIENS = [
-  { icone: "👕", texte: "Textiles", description: "Sweat, T-shirt", action: "Commander", url: "https://tally.so/r/OQ7Qkg", style: "" },
-  { icone: "🎁", texte: "Goodies", description: "Les goodies de l'Amicale", action: "Commander", url: "https://tally.so/r/RWDxNl", style: "" },
-  { icone: "🎫", texte: "Évènements", description: "Réserve ta place", action: "Réserver", url: "https://tally.so/r/EqxqgX", style: "alt" }
+  { icone: "👕", texte: "Textiles",    description: "Sweat, T-shirt",           action: "Commander", url: "https://tally.so/r/OQ7Qkg", style: "" },
+  { icone: "🎁", texte: "Goodies",     description: "Les goodies de l'Amicale", action: "Commander", url: "https://tally.so/r/RWDxNl", style: "" },
+  { icone: "🎫", texte: "Évènements",  description: "Réserve ta place",         action: "Réserver",  url: "https://tally.so/r/EqxqgX", style: "alt" }
 ];
 
 // Évènements : date au format AAAA-MM-JJ. Les dates passées disparaissent toutes seules.
+// "couleur" (facultatif) : "auto" (le prochain en or, les autres en rouge), "or", "rouge", "bleu", "vert", "blanc", "violet", "turquoise" ou "orange".
 const EVENEMENTS = [
-  { date: "2026-11-19", titre: "Beaujolais", details: "" },
-  { date: "2026-12-11", titre: "Marché de Noël", details: "H.D Bobigny" },
-  { date: "2026-12-25", titre: "Noël", details: "Hey! C'est Noël! HoHoHo!" },
-  { date: "2026-12-31", titre: "Nouvel An!", details: "" }
+  { date: "2026-11-19", titre: "Beaujolais",      details: "" },
+  { date: "2026-12-11", titre: "Marché de Noël",  details: "H.D Bobigny" },
+  { date: "2026-12-25", titre: "Noël",            details: "Hey! C'est Noël! HoHoHo!" },
+  { date: "2026-12-31", titre: "Nouvel An!",      details: "" }
 // { date: "2027-03-17", titre: "Soirée Saint-Patrick", details: "Date à confirmer" },
 ];
 
-// News : la plus récente en premier. "image", "lien", "texteLien" et "rouge" sont facultatifs.
+// News : la plus récente en premier. "image", "lien", "texteLien" et "couleur" (rouge, bleu, vert, blanc, violet, turquoise ou orange ; or par défaut) sont facultatifs.
 // Dans "texte" : **gras**, *italique*, __souligné__, et \n pour un retour à la ligne.
 const NEWS = [
   {
@@ -215,9 +220,9 @@ const NEWS = [
     date: "2026-11-20",
     titre: "🎄 Marché de Noël le 11 décembre ! 🎁",
     texte: "Des séances de massage de 20 min seront proposées entre 10h et 14h par deux masseuses. Pour réserver, fais signe à un membre du bureau. Des exposants seront présents dans nos murs pour proposer leurs produits!",
-    image: "images/logo_noel.jpeg",
     lien: "https://amst93-noel-massage.netlify.app/",
-    texteLien: "Voir le planning des massages"
+    texteLien: "Voir le planning des massages",
+    image: "images/logo_noel.jpeg"
   }
 ];
 
@@ -252,8 +257,9 @@ $("liens").innerHTML = LIENS.map(l =>
   (l.description ? `<span class="carte-desc">${esc(l.description)}</span>` : "") +
   `<span class="carte-go">${esc(l.action || "Accéder")} →</span></a>`).join("");
 
+const coulNews = n => n.couleur || (n.rouge ? "rouge" : "");
 $("news-liste").innerHTML = NEWS.length ? NEWS.map(n =>
-  `<div class="news${n.image ? " avec-image" : ""}${n.rouge ? " rouge" : ""}">` +
+  `<div class="news${n.image ? " avec-image" : ""}${coulNews(n) === "rouge" ? " rouge" : ""}${coulNews(n) && coulNews(n) !== "or" ? " c-" + esc(coulNews(n)) : ""}">` +
   (n.image ? `<img src="${esc(n.image)}" alt="${esc(n.titre)}" loading="lazy">` : "") +
   `<div class="news-corps"><h3>${esc(n.titre)}</h3><div class="tag">${fmt(n.date)}</div><p>${riche(n.texte)}</p>` +
   (n.lien ? `<p><a href="${esc(n.lien)}">${esc(n.texteLien || "En savoir plus")} →</a></p>` : "") +
@@ -268,7 +274,9 @@ $("agenda-liste").innerHTML = aVenir.length ? aVenir.map((e, i) => {
   const mois = isNaN(d) ? "" : d.toLocaleDateString("fr-FR", { month: "short" }).replace(".", "");
   const n = isNaN(d) ? null : Math.round((d - jourRef) / 86400000);
   const delai = n === null ? "" : n === 0 ? "Aujourd'hui" : n === 1 ? "Demain" : `J-${n}`;
-  return `<div class="ev${i === 0 ? " prochain" : ""}"><div class="ev-date"><div class="badge"><b>${jour}</b><span>${esc(mois)}</span></div>` +
+  const c = e.couleur || "auto";
+  const cls = c === "or" || (c === "auto" && i === 0) ? " prochain" : c === "auto" || c === "rouge" ? "" : " cc c-" + esc(c);
+  return `<div class="ev${cls}"><div class="ev-date"><div class="badge"><b>${jour}</b><span>${esc(mois)}</span></div>` +
     (delai ? `<span class="ev-delai">${esc(delai)}</span>` : "") + `</div>` +
     `<div class="ev-corps"><span class="ev-titre">${esc(e.titre)}</span>` +
     (e.details ? `<div class="tag">${esc(e.details)}</div>` : "") + `</div></div>`;
