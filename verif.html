@@ -14,9 +14,9 @@ p{color:#a9b4cf;font-size:.9rem}
 </style></head><body><main>
 <h1>Amicale ST93 · Vérification de carte de membre</h1>
 <div class="carte" id="carte"><div class="icone" id="ic">🔎</div><h2 id="t">Vérification…</h2><div id="d"></div></div>
-<p id="n"></p><p style="font-size:.75rem">Clé de vérification : D402-5DCF-F84B</p>
+<p id="n"></p><p style="font-size:.75rem">Clé de vérification : 7ECE-1374-EC58</p>
 <script>
-const PUB={"kty":"EC","crv":"P-256","x":"kUkdQ1j7vB4z5K0DZI9YDklMq0KgT1X_X6a4ZJzcF00","y":"ucXZEUR3L1b7QAAE8PDgmOPvMDPZZ47jTIfGbwi-qtI"}, REVOQUEES=["0003"];
+const PUB={"kty":"EC","crv":"P-256","x":"trNGd10oSeHiqaYq6maUFsUARJUVf3lZXvkCDCTEO24","y":"Cd0yCgJ9aJodh5bmKrIokMEi75K7aSrj4sgP2fVNx1Q"}, REVOQUEES=[];
 const $=i=>document.getElementById(i);
 const octets=s=>Uint8Array.from(atob(s.replace(/-/g,"+").replace(/_/g,"/")+"=".repeat((4-s.length%4)%4)),c=>c.charCodeAt(0));
 const fr=iso=>iso.split("-").reverse().join("/");
