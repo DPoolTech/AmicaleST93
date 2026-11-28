@@ -58,18 +58,18 @@ h2::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--go
 
 .news{padding:16px 18px;margin:0 0 18px;background:rgba(255,255,255,.06);border:1px solid var(--bd);border-left:5px solid var(--c,var(--gold));border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.25)}
 .news:last-child{margin-bottom:0}
-.news h3{margin:0 0 4px;font-family:"Playfair Display",Georgia,serif;font-size:1.3rem;color:var(--c,var(--gold))}
+.news h3{margin:0 0 4px;font-family:"Playfair Display",Georgia,serif;font-size:1.3rem;line-height:1.25;overflow-wrap:break-word;color:var(--c,var(--gold))}
 .news .tag{padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid var(--c,var(--gold))}
 .tag{font-size:.82rem;color:var(--mut)}
 .news p{margin:6px 0;white-space:pre-line}
 .news-corps{flex:1;min-width:0}
-.news.avec-image{display:flex;gap:18px;align-items:flex-start}
+.news-contenu{display:flex;gap:18px;align-items:flex-start}
 .news-fig{flex:0 0 38%;width:38%;margin:0}
 .zoom{display:block;width:100%;padding:0;border:0;background:none;border-radius:12px;cursor:zoom-in}
 .zoom img{display:block;width:100%;max-height:260px;object-fit:cover;border-radius:12px}
 .news-fig figcaption{margin-top:5px;text-align:center;font-size:.72rem;color:var(--mut);opacity:.85}
 @media (max-width:560px){
-  .news.avec-image{flex-direction:column}
+  .news-contenu{flex-direction:column}
   .news-fig{flex:none;width:100%}
   .zoom img{max-height:240px}
 }
@@ -325,12 +325,14 @@ const nbPages = Math.max(1, Math.ceil(NEWS.length / NEWS_PAR_PAGE));
 
 const carteNews = (n, i) =>
   `<div class="news${n.image ? " avec-image" : ""}${coulNews(n) === "rouge" ? " rouge" : ""}${coulNews(n) && coulNews(n) !== "or" ? " c-" + esc(coulNews(n)) : ""}" id="news-${i}" tabindex="-1">` +
+  `<div class="news-tete">${epingleIdx.has(i) ? `<div class="pin">📌 Épinglé</div>` : ""}<h3>${esc(n.titre)}</h3><div class="tag">${fmt(n.date)}</div></div>` +
+  `<div class="news-contenu">` +
   (n.image ? `<figure class="news-fig"><button type="button" class="zoom" aria-label="Agrandir l’image : ${esc(n.titre)}"><img src="${esc(n.image)}" alt="${esc(n.titre)}" loading="lazy"></button><figcaption>Cliquez pour agrandir</figcaption></figure>` : "") +
-  `<div class="news-corps">${epingleIdx.has(i) ? `<div class="pin">📌 Épinglé</div>` : ""}<h3>${esc(n.titre)}</h3><div class="tag">${fmt(n.date)}</div>` +
+  `<div class="news-corps">` +
   `<div class="news-texte"><p>${riche(n.texte)}</p></div>` +
   `<button type="button" class="plus" aria-expanded="false" hidden>Afficher toute la news</button>` +
   (n.lien ? `<p><a href="${esc(n.lien)}">${esc(n.texteLien || "En savoir plus")} →</a></p>` : "") +
-  `</div></div>`;
+  `</div></div></div>`;
 
 function ajusterNews() {
   document.documentElement.style.setProperty("--news-lignes", NEWS_LIGNES_MAX);
