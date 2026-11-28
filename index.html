@@ -239,7 +239,8 @@ const EVENEMENTS = [
 
 // Réglages des news : nombre par page, et nombre de lignes visibles avant « Afficher toute la news ».
 const NEWS_PAR_PAGE = 10;
-const NEWS_LIGNES_MAX = 7;
+const NEWS_LIGNES_MAX = 7;   // lignes visibles pour une news sans image (ou sur téléphone)
+const NEWS_LIGNES_MIN = 5;   // avec image : le texte s'arrête au bas de la photo, avec au moins ce nombre de lignes
 const EPINGLES_MAX = 3;   // nombre maximum de news épinglées affichées en haut de la page
 
 // News : la plus récente en premier. "image", "lien", "texteLien" et "couleur" (rouge, bleu, vert, blanc, violet, turquoise ou orange ; or par défaut) sont facultatifs.
@@ -340,8 +341,16 @@ function ajusterNews() {
     const bouton = t.nextElementSibling;
     if (t.classList.contains("ouvert")) { bouton.hidden = false; return; }
     t.classList.remove("coupe");
+    t.style.removeProperty("--news-lignes");
     const lh = parseFloat(getComputedStyle(t).lineHeight) || 24;
-    const long = t.scrollHeight > NEWS_LIGNES_MAX * lh + 6 + lh * 1.5;
+    const img = t.closest(".news").querySelector(".zoom img");
+    let lignes = NEWS_LIGNES_MAX;
+    // Image à côté du texte : on coupe le texte à peu près au niveau du bas de la photo.
+    if (img && img.complete && img.naturalHeight && getComputedStyle(t.closest(".news-contenu")).flexDirection === "row") {
+      lignes = Math.max(NEWS_LIGNES_MIN, Math.round((img.getBoundingClientRect().height - 6) / lh));
+      t.style.setProperty("--news-lignes", lignes);
+    }
+    const long = t.scrollHeight > lignes * lh + 6 + lh * 1.5;
     t.classList.toggle("coupe", long);
     bouton.hidden = !long;
   });
@@ -387,6 +396,7 @@ const clicNews = e => {
   }
 };
 $("news-liste").addEventListener("click", clicNews);
+$("news-liste").addEventListener("load", ajusterNews, true);   // une image qui finit de charger change la hauteur de référence
 $("epingles").addEventListener("click", e => {
   const b = e.target.closest(".note"); if (!b) return;
   const i = +b.dataset.i, page = Math.floor(i / NEWS_PAR_PAGE) + 1;
